@@ -1,4 +1,4 @@
-### Data Preprocessing
+####### Data Preprocessing ####################################################
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -17,24 +17,78 @@ training_scaled = scaling.fit_transform(training)
 xtrain = []
 ytrain = []
 
-# Using 70% of Dataset to train
+# Using ~70% of Dataset to train (1600/2300)
 for i in range(60, 1600):
     xtrain.append(training_scaled[i-60:i, 0])
     ytrain.append(training_scaled[i, 0])
 xtrain = np.array(xtrain)
 ytrain = np.array(ytrain)
 xtrain = np.reshape(xtrain, (xtrain.shape[0], xtrain.shape[1], 1))
+################################################################################
 
-### Recurrent Neural Network
+
+
+####### Recurrent Neural Network ###############################################
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Dropout
 
-# Run On Test Set
+# Starting RNN
+rnn = Sequential()
 
-# Calculate RMSE
+# First LSTM layer w/ dropout 
+rnn.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
+rnn.add(Dropout(0.2))
 
-# Training loss curve
+# Second LSTM layer w/ dropout 
+rnn.add(LSTM(units = 50, return_sequences = True))
+rnn.add(Dropout(0.2))
 
-# Graph Results
+# Third LSTM layer w/ dropout 
+rnn.add(LSTM(units = 50, return_sequences = True))
+rnn.add(Dropout(0.2))
+
+# Fourth LSTM layer w/ dropout 
+rnn.add(LSTM(units = 50, return_sequences = True))
+rnn.add(Dropout(0.2))
+
+# Fifth LSTM layer w/ dropout 
+rnn.add(LSTM(units = 50))
+rnn.add(Dropout(0.2))
+
+# Output layer
+rnn.add(Dense(units = 1))
+
+# Compiling the RNN
+# Adam optimization is a stochastic gradient descent method
+# It is based on adaptive estimation of first-order and second-order moments.
+rnn.compile(optimizer = 'adam', loss = 'mean_squared_error')
+
+# Train the model by fitting the RNN for the training set
+history = rnn.fit(X_train, y_train, epochs = 100, batch_size = 32)
+####################################################################################
+
+
+
+####### Run On Test Set ############################################################
+
+####################################################################################
+
+
+
+####### Calculate RMSE #############################################################
+
+####################################################################################
+
+
+
+####### Training Loss Curve ########################################################
+
+####################################################################################
+
+
+
+####### Graph Results ##############################################################
+
+####################################################################################
