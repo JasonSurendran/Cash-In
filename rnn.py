@@ -94,5 +94,11 @@ plt.show()
 
 
 ####### Graph Results ##############################################################
-
+plt.plot(real_stock_price, color = 'red', label = 'Real Stock Price')
+plt.plot(predicted_stock_price, color = 'black', label = 'Predicted Stock Price')
+plt.title('Stock Price Prediction')
+plt.xlabel('Days Forward')
+plt.ylabel('Stock Price')
+plt.legend()
+plt.show()
 ####################################################################################
