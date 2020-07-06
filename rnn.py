@@ -1,7 +1,7 @@
 ####### Data Preprocessing ####################################################
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
 # Importing Data
@@ -29,10 +29,10 @@ xtrain = np.reshape(xtrain, (xtrain.shape[0], xtrain.shape[1], 1))
 
 
 ####### Recurrent Neural Network ###############################################
-from keras.models import Sequential
 from keras.layers import Dense
-from keras.layers import LSTM
 from keras.layers import Dropout
+from keras.layers import LSTM
+from keras.models import Sequential
 
 # Starting RNN
 rnn = Sequential()
@@ -84,7 +84,11 @@ history = rnn.fit(X_train, y_train, epochs = 100, batch_size = 32)
 
 
 ####### Training Loss Curve ########################################################
-
+loss = history.history['loss']
+epochs = range(1, len(loss)+1)
+plt.plot(epochs, loss, 'ro', label='Training Loss')
+plt.legend()
+plt.show()
 ####################################################################################
 
 
