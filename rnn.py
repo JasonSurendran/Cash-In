@@ -72,13 +72,19 @@ history = rnn.fit(X_train, y_train, epochs = 100, batch_size = 32)
 
 
 ####### Run On Test Set ############################################################
+# Getting real stock price from csv
+dataset_test = pd.read_csv('Apple_Stock_Price_Test.csv')
+real_stock_price = dataset_test.iloc[:, 1:2].values
 
 ####################################################################################
 
 
 
 ####### Calculate RMSE #############################################################
-
+import math
+from sklearn.metrics import mean_squared_error
+rmse = math.sqrt(mean_squared_error(real_stock_price, predicted_stock_price))
+print(rmse)
 ####################################################################################
 
 
