@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
 # Importing Data
-dataset = pd.read_csv('Manulife_Stock_Price_Train.csv')
-training = dataset.iloc[:, 1:2].values
+dataset_train = pd.read_csv('Manulife_Stock_Price_Train.csv')
+training_set = dataset_train.iloc[:, 1:2].values
 
 # Scale features between 0-1
 scaling = MinMaxScaler(feature_range = (0, 1))
-training_scaled = scaling.fit_transform(training)
+training_set_scaled = scaling.fit_transform(training_set)
 
 # Data structure
 # Remember the last 2 months
@@ -19,10 +19,10 @@ ytrain = []
 
 # Using ~70% of Dataset to train (1600/2300)
 for i in range(60, 1600):
-    xtrain.append(training_scaled[i-60:i, 0])
-    ytrain.append(training_scaled[i, 0])
-xtrain = np.array(xtrain)
-ytrain = np.array(ytrain)
+    xtrain.append(training_set_scaled[i-60:i, 0])
+    ytrain.append(training_set_scaled[i, 0])
+xtrain, ytrain = np.array(xtrain), np.array(ytrain)
+
 xtrain = np.reshape(xtrain, (xtrain.shape[0], xtrain.shape[1], 1))
 ################################################################################
 
@@ -38,7 +38,7 @@ from keras.models import Sequential
 rnn = Sequential()
 
 # First LSTM layer w/ dropout 
-rnn.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
+rnn.add(LSTM(units = 50, return_sequences = True, input_shape = (xtrain.shape[1], 1)))
 rnn.add(Dropout(0.2))
 
 # Second LSTM layer w/ dropout 
@@ -46,14 +46,6 @@ rnn.add(LSTM(units = 50, return_sequences = True))
 rnn.add(Dropout(0.2))
 
 # Third LSTM layer w/ dropout 
-rnn.add(LSTM(units = 50, return_sequences = True))
-rnn.add(Dropout(0.2))
-
-# Fourth LSTM layer w/ dropout 
-rnn.add(LSTM(units = 50, return_sequences = True))
-rnn.add(Dropout(0.2))
-
-# Fifth LSTM layer w/ dropout 
 rnn.add(LSTM(units = 50))
 rnn.add(Dropout(0.2))
 
@@ -66,16 +58,28 @@ rnn.add(Dense(units = 1))
 rnn.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
 # Train the model by fitting the RNN for the training set
-history = rnn.fit(X_train, y_train, epochs = 100, batch_size = 32)
+history = rnn.fit(xtrain, ytrain, epochs = 100, batch_size = 32)
 ####################################################################################
 
 
 
 ####### Run On Test Set ############################################################
 # Getting real stock price from csv
-dataset_test = pd.read_csv('Apple_Stock_Price_Test.csv')
+dataset_test = pd.read_csv('Manulife_Stock_Price_Test.csv')
 real_stock_price = dataset_test.iloc[:, 1:2].values
 
+# Getting prediction stock price
+dataset_total = pd.concat((dataset_train['Open'], dataset_test['Open']), axis = 0)
+inputs = dataset_total[len(dataset_total) - len(dataset_test) - 60:].values
+inputs = inputs.reshape(-1,1)
+inputs = scaling.transform(inputs)
+xtest = []
+for i in range(60, 760):
+    xtest.append(inputs[i-60:i, 0])
+xtest = np.array(xtest)
+xtest = np.reshape(xtest, (xtest.shape[0], xtest.shape[1], 1))
+predicted_stock_price = rnn.predict(xtest)
+predicted_stock_price = scaling.inverse_transform(predicted_stock_price)
 ####################################################################################
 
 
@@ -108,3 +112,4 @@ plt.ylabel('Stock Price')
 plt.legend()
 plt.show()
 ####################################################################################
+
