@@ -1,2 +1,2 @@
 # Cash-In
-Stock Predictor with ETL Pipeline
+Stock Predictor
